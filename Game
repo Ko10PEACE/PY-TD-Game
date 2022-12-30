@@ -4,9 +4,13 @@ import pygame
   #initializes pygame
 pygame.init()
   #sets the window Height, Width
-win = pygame.display.set_mode((500,500))
+win = pygame.display.set_mode((1000,500))
   #adds a caption to the window
 pygame.display.set_caption("First Game")
+
+#adds background image & scales it (!ADD IMG FILE!)
+bg_img = pygame.image.load('filename.png')
+bg = pygame.transform.scale(bg_img, (1000,500))
 
 #creates variables for the circle function
 x = 250
@@ -20,10 +24,25 @@ vel_y = 10
 #assigns jump var
 jump = False
 
+width = 1000 
+i = 0
+
 #keeps the display up and running
 run = True
 while run:
 
+
+  
+  #sets the start point of the image in the window and scrolls it to the left
+  win.fill((0,0,0))
+  win.blit(bg, (i,0))
+  win.blit(bg, (width + i, 0))
+  
+  if i == -width: 
+    win.blit(bg, (width + i,0))
+    i = 0
+  i -= 1
+  
   #makes the screen refresh every while iteration so you dont have image burn-in
   win.fill((0,0,0))
 
@@ -41,7 +60,7 @@ while run:
   #assigns what the key presses mean and defines the bounds
   if userInput[pygame.K_LEFT] and x > 0:
     x -= vel_x
-  if userInput[pygame.K_RIGHT] and x < 500:
+  if userInput[pygame.K_RIGHT] and x < 1000:
     x += vel_x
     
   if jump is False and userInput[pygame.K_SPACE]:
