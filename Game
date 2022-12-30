@@ -1,0 +1,19 @@
+#install pygame using terminal: pip install pygame
+
+import pygame
+  #initializes pygame
+pygame.init()
+  #sets the display Height, Width
+win = pygame.display.set_mode((500,500))
+  #adds a caption to the window
+pygame.display.set_caption("First Game")
+
+
+
+#keeps the display up and running or closes it when hitting |X|
+run = True
+while run:
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      run = False
+  pygame.display.update()
