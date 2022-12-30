@@ -92,6 +92,7 @@ class Hero:
     # jump
     self.jump = False
     self.bullets = []
+    self.cooldown_count = 0
     
     # creates a loop for the character animation images
   def draw(self, win)
@@ -129,19 +130,31 @@ class Hero:
     if self.vel_y < -10:
       self.jump = False
       self.vel_y = 10
-      
+   
+   # Player Direction
    def direction(self):
       if self.face_right = True
         return 1 
       if self.face_left = True
         return -1
-      
+        
+   # Player Shoot
    def shoot(self):
-      if userInput[pygame.K_f]:
+      if (userInput[pygame.K_f] and self.cooldown_count == 0):
         bullet = Bullet(self.x, self.y, self.direction())
         self.bullets.append(bullet)
+        self.cooldown_count = 1
       for bullet in self.bullets:
         bullet.move()
+        if bullet.off_screen():
+          self.bullets.remove(bullets)
+          
+    def cooldown(self):
+        if self.cooldown_count >= 8:
+            self.cooldown_count = 0
+        elif self.cooldown_count > 0:
+            self.cooldown_count += 1
+      
         
 class Bullet:
   def __init__ (self, x, y, direction)
@@ -157,10 +170,12 @@ class Bullet:
       self.x += 15
     if self.direction == -1
       self.x -= 15
+      
+  def off_screen(self):
+    return not(self.x >= 0 and self.x <= win_width) 
 
 class Enemy:
   def __init__ (init, x, y)
-  
   
 player = Hero(250, 290)
 
@@ -175,7 +190,6 @@ while run:
       run = False
   
   draw_game()
-  
       
   # takes user input  
   userInput = pygame.key.get_pressed()
