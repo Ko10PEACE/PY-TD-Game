@@ -1,6 +1,7 @@
 #install pygame using terminal: pip install pygame
 import pygame
 import os
+import random
 
 #initializes pygame
 pygame.init()
@@ -35,6 +36,16 @@ for  picIndex in range(1,10):
 # Bullet Images !ADD IMG FILES!
 bullet_img = pygame.transform.scale(pygame.image.load(os.path.join("Bullets", "bullets.png")), (10, 10))
 
+#Enemy Left
+left_enemy = [None]*10
+for  picIndex in range(1,10):
+  left[picIndex - 1] = pygame.image.load(os.path.join("Enemy", "L" + str(picIndex) + ".png" ))
+  
+#Enemy Right
+right_enemy = [None]*10
+for  picIndex in range(1,10):
+  right[picIndex - 1] = pygame.image.load(os.path.join("Enemy", "R" + str(picIndex) + ".png" ))
+
   
 # --Variables--
 
@@ -65,8 +76,10 @@ def draw_game():
   # delays loop by (milliseconds)
   pygame.time.delay(30)
   pygame.display.update()
-  for bullet in player.bullets
+  for bullet in player.bullets:
     bullet.draw_bullet()
+  for enemy in enemies:
+    enemy.draw(win)
    
   # sets the start point of the image in the window and scrolls it to the left
   win.blit(bg, (i,0))
@@ -93,9 +106,13 @@ class Hero:
     self.jump = False
     self.bullets = []
     self.cooldown_count = 0
+    #health
+    self.hitbox = (self.x, self.y, 64,64)
     
     # creates a loop for the character animation images
-  def draw(self, win)
+  def draw(self, win):
+    self.hitbox = (self.x +15, self.y +15, 30,40)
+    pygame.draw.rect(win, (0,0,0), self.hitbox, 1)
     if self.stepIndex >= 36:
         self.stepIndex = 0
     if move_left:
@@ -140,6 +157,7 @@ class Hero:
         
    # Player Shoot
    def shoot(self):
+      self.hit
       if (userInput[pygame.K_f] and self.cooldown_count == 0):
         bullet = Bullet(self.x, self.y, self.direction())
         self.bullets.append(bullet)
@@ -148,12 +166,20 @@ class Hero:
         bullet.move()
         if bullet.off_screen():
           self.bullets.remove(bullets)
-          
+    
+    # Sets the cooldown for the bullet firing
     def cooldown(self):
         if self.cooldown_count >= 8:
             self.cooldown_count = 0
         elif self.cooldown_count > 0:
             self.cooldown_count += 1
+            
+    # Checks to see if the bullet is inside the hitbox.     
+    def hit(self):
+      for enemy in enemies:
+          for bullet in self.bullets:
+              if enemy.hitbox[0] < bullet.x < enemy.hitbox[0] + enemy.hitbox[2] and enemy.hitbox[1] < bullet.y < enemy.hitbox[1]:
+                  print("Enemy Hit")
       
         
 class Bullet:
@@ -162,24 +188,61 @@ class Bullet:
     self.y = y + 30
     self.direction = direction
     
-  def draw_bullet(self)
+  def draw_bullet(self):
     win.blit(bullet_img, (self.x, self.y))
     
+  # Defines movement behaviour of bullet  
   def move(self):
     if self.direction == 1
       self.x += 15
     if self.direction == -1
       self.x -= 15
-      
+  
+  # Removes bullet if off screen
   def off_screen(self):
-    return not(self.x >= 0 and self.x <= win_width) 
+    return not(self.x >= 0 and self.x <= win_width +50) 
 
 class Enemy:
-  def __init__ (init, x, y)
+  def __init__ (init, x, y):
+    self.x = x
+    self.y = y
+    self.stepIndex = 0
+    self.hitbox = (self.x, self.y, 64,64)
+  
+  def step(self):
+    if self.stepIndex >= 11:
+      self.stepIndex = 0
+      
+  # Hitbox (width, height)
+  def draw(self, win):
+    self.hitbox = (self.x +15, self.y +10, 27,50)
+    pygame.draw.rect(win, (0,0,0), self.hitbox, 1)
+    win.blit(left_enemy[0], (self.x, self.y))
+    
+  def move(self):
+    self.hit
+    self.x -= 3
+    
+  # if enemy gets within player hit box. 
+  def hit(self):
+    if player.hitbox[0] < enemy.x < player.hitbox[0] + player.hitbox[2] and player.hitbox[1] < enemy.y < player.hitbox[1]:
+       print("Player Hit")
+ 
+   def draw(self, win):
+    self.step()
+    win.blit(left_enemy[self.stepIndex//3], (self.x, self.y))
+    self.stepIndex += 1
+    
+  def off_screen(self):
+    return not (self.x >= -80 and self.x <= win_width)
+     
   
 player = Hero(250, 290)
 
+enemies = [] 
+
 # --MAIN LOOP--
+
 # keeps the display up and running
 run = True
 while run:
@@ -200,3 +263,14 @@ while run:
   
   # Player Shoot
   player.shoot()
+
+  # Enemy
+  if len(enemies) == 0:
+    enemy = Enemy(700, 300)
+    enemies.append(enemy)
+  for enemy in enemies:
+    enemy.move()
+    if enemy.off_sceeen == True:
+      enemies.remove(enemy)
+      
+    
